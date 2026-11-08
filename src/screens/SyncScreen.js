@@ -56,16 +56,16 @@ export function SyncScreen() {
 
   const handleManualSync = async () => {
     if (!networkStatus.isOnline) {
-      Alert.alert("Aparelho Offline", "Conecte-se à internet para sincronizar com o Firestore.");
+      Alert.alert("Sem conexão", "Conecte-se à internet para sincronizar os dados com o servidor.");
       return;
     }
 
     try {
       await syncService.syncAll(true);
       await carregarResumo();
-      Alert.alert("Sucesso", "Sincronização entre SQLite e Firestore concluída!");
+      Alert.alert("Sucesso", "Sincronização de dados concluída com sucesso.");
     } catch (e) {
-      Alert.alert("Erro", "Falha na sincronização.");
+      Alert.alert("Erro", "Não foi possível concluir a sincronização. Verifique sua conexão e tente novamente.");
     }
   };
 

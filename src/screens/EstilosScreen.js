@@ -79,7 +79,7 @@ export function EstilosScreen() {
 
   const salvar = async () => {
     if (!nome.trim()) {
-      Alert.alert("Atenção", "O nome do estilo é obrigatório.");
+      Alert.alert("Aviso", "O nome do estilo é obrigatório.");
       return;
     }
 
@@ -112,20 +112,20 @@ export function EstilosScreen() {
       await carregarDados();
 
       if (isOnline) {
-        Alert.alert("Sucesso", "Estilo salvo e sincronizado na nuvem!");
+        Alert.alert("Sucesso", "Estilo salvo com sucesso.");
       } else {
-        Alert.alert("Salvo Localmente", "Você está offline. O estilo foi gravado no SQLite e será sincronizado quando a conexão retornar.");
+        Alert.alert("Salvo offline", "Registro salvo localmente. A sincronização será realizada automaticamente assim que a conexão for restabelecida.");
       }
     } catch (error) {
       console.error("Erro ao salvar estilo:", error);
-      Alert.alert("Erro", "Não foi possível salvar o estilo.");
+      Alert.alert("Erro", "Não foi possível salvar o estilo. Tente novamente.");
     }
   };
 
   const confirmarExcluir = (item) => {
     Alert.alert(
-      "Excluir Estilo",
-      `Deseja realmente excluir "${item.nome}"?`,
+      "Confirmar exclusão",
+      `Tem certeza de que deseja excluir "${item.nome}"? Esta ação não pode ser desfeita.`,
       [
         { text: "Cancelar", style: "cancel" },
         { 
@@ -149,10 +149,10 @@ export function EstilosScreen() {
       }
 
       await carregarDados();
-      Alert.alert("Excluído", isOnline ? "Estilo removido com sucesso." : "Removido localmente. A exclusão será refletida na nuvem ao reconectar.");
+      Alert.alert("Sucesso", isOnline ? "Estilo excluído com sucesso." : "Registro marcado para exclusão. A atualização será concluída ao restabelecer a conexão.");
     } catch (error) {
       console.error("Erro ao excluir estilo:", error);
-      Alert.alert("Erro", "Falha ao excluir estilo.");
+      Alert.alert("Erro", "Não foi possível excluir o estilo. Tente novamente.");
     }
   };
 

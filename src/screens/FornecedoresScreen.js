@@ -70,7 +70,7 @@ export function FornecedoresScreen() {
 
   const handleBuscarCep = async () => {
     if (!cep.trim()) {
-      Alert.alert("Aviso", "Digite um CEP para consultar.");
+      Alert.alert("Aviso", "Por favor, informe o CEP para realizar a consulta.");
       return;
     }
 
@@ -82,10 +82,13 @@ export function FornecedoresScreen() {
         setBairro(dados.bairro);
         setCidade(dados.cidade);
         setUf(dados.uf);
-        Alert.alert("Sucesso", `Endereço localizado:\n${dados.cidade} - ${dados.uf}`);
+        Alert.alert(
+          "Endereço localizado",
+          `${dados.logradouro ? dados.logradouro + "\n" : ""}${dados.bairro ? dados.bairro + " - " : ""}${dados.cidade}/${dados.uf}`
+        );
       }
     } catch (error) {
-      Alert.alert("Erro na Consulta do CEP", error.message || "Não foi possível consultar o CEP.");
+      Alert.alert("Consulta de CEP", error.message || "Não foi possível localizar o endereço para o CEP informado.");
     } finally {
       setBuscandoCep(false);
     }
@@ -119,7 +122,7 @@ export function FornecedoresScreen() {
 
   const salvar = async () => {
     if (!nome.trim()) {
-      Alert.alert("Atenção", "O nome do fornecedor é obrigatório.");
+      Alert.alert("Aviso", "A razão social ou nome do fornecedor é obrigatório.");
       return;
     }
 
@@ -162,20 +165,20 @@ export function FornecedoresScreen() {
       await carregarDados();
 
       if (isOnline) {
-        Alert.alert("Sucesso", "Fornecedor salvo e sincronizado na nuvem!");
+        Alert.alert("Sucesso", "Fornecedor salvo com sucesso.");
       } else {
-        Alert.alert("Salvo Localmente", "Você está offline. O fornecedor foi salvo no SQLite e será sincronizado quando a internet retornar.");
+        Alert.alert("Salvo offline", "Registro salvo localmente. A sincronização será realizada automaticamente assim que a conexão for restabelecida.");
       }
     } catch (error) {
       console.error("Erro ao salvar fornecedor:", error);
-      Alert.alert("Erro", "Não foi possível salvar o fornecedor.");
+      Alert.alert("Erro", "Não foi possível salvar o fornecedor. Tente novamente.");
     }
   };
 
   const confirmarExcluir = (item) => {
     Alert.alert(
-      "Excluir Fornecedor",
-      `Deseja realmente excluir "${item.nome}"?`,
+      "Confirmar exclusão",
+      `Tem certeza de que deseja excluir "${item.nome}"? Esta ação não pode ser desfeita.`,
       [
         { text: "Cancelar", style: "cancel" },
         { 
@@ -199,10 +202,10 @@ export function FornecedoresScreen() {
       }
 
       await carregarDados();
-      Alert.alert("Excluído", isOnline ? "Fornecedor removido com sucesso." : "Removido localmente. A exclusão será sincronizada com a nuvem ao reconectar.");
+      Alert.alert("Sucesso", isOnline ? "Fornecedor excluído com sucesso." : "Registro marcado para exclusão. A atualização será concluída ao restabelecer a conexão.");
     } catch (error) {
       console.error("Erro ao excluir fornecedor:", error);
-      Alert.alert("Erro", "Falha ao excluir fornecedor.");
+      Alert.alert("Erro", "Não foi possível excluir o fornecedor. Tente novamente.");
     }
   };
 

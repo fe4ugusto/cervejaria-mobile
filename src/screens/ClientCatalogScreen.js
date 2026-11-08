@@ -71,7 +71,7 @@ export function ClientCatalogScreen() {
   const adicionarAoCarrinho = (cerveja) => {
     const estoque = cerveja.estoque || 0;
     if (estoque <= 0) {
-      Alert.alert("Esgotado", "Esta cerveja está temporariamente sem estoque.");
+      Alert.alert("Indisponível", "Este item encontra-se temporariamente sem estoque.");
       return;
     }
 
@@ -79,7 +79,7 @@ export function ClientCatalogScreen() {
     const qtdAtual = itemExistente ? itemExistente.quantidade : 0;
 
     if (qtdAtual >= estoque) {
-      Alert.alert("Estoque Limite", `Apenas ${estoque} unidades disponíveis deste rótulo.`);
+      Alert.alert("Limite de estoque", `Quantidade máxima disponível: ${estoque} unidade(s).`);
       return;
     }
 
@@ -102,7 +102,7 @@ export function ClientCatalogScreen() {
           if (item.id === id) {
             const novaQtd = item.quantidade + delta;
             if (novaQtd > estoque) {
-              Alert.alert("Aviso", `Apenas ${estoque} unidades em estoque.`);
+              Alert.alert("Limite de estoque", `Estoque máximo atingido (${estoque} unidade(s)).`);
               return item;
             }
             return novaQtd > 0 ? { ...item, quantidade: novaQtd } : null;
@@ -116,7 +116,7 @@ export function ClientCatalogScreen() {
   // Consulta do CEP de entrega pela API ViaCEP
   const handleConsultarCepEntrega = async () => {
     if (!cepEntrega.trim()) {
-      Alert.alert("Aviso", "Digite o CEP para calcular a entrega.");
+      Alert.alert("Aviso", "Por favor, informe o CEP para calcular a entrega.");
       return;
     }
 
@@ -125,10 +125,13 @@ export function ClientCatalogScreen() {
       const dados = await consultarCep(cepEntrega);
       if (dados) {
         setEnderecoEntrega(dados);
-        Alert.alert("Endereço Localizado!", `Entrega para: ${dados.logradouro}, ${dados.bairro} - ${dados.cidade}/${dados.uf}`);
+        Alert.alert(
+          "Endereço confirmado",
+          `${dados.logradouro ? dados.logradouro + ", " : ""}${dados.bairro} - ${dados.cidade}/${dados.uf}`
+        );
       }
     } catch (err) {
-      Alert.alert("Erro ao buscar CEP", err.message || "CEP não encontrado.");
+      Alert.alert("Consulta de CEP", err.message || "Não foi possível localizar o endereço para o CEP informado.");
     } finally {
       setBuscandoCep(false);
     }
@@ -139,7 +142,7 @@ export function ClientCatalogScreen() {
     if (carrinho.length === 0) return;
 
     if (!enderecoEntrega) {
-      Alert.alert("Endereço Obrigatório", "Consulte o CEP para preencher o endereço de entrega.");
+      Alert.alert("Aviso", "Por favor, confirme o endereço de entrega antes de finalizar o pedido.");
       return;
     }
 
@@ -188,10 +191,10 @@ export function ClientCatalogScreen() {
       setCepEntrega("");
       await carregarCatalogo();
 
-      Alert.alert("🍻 Pedido Confirmado!", "Seu pedido de cervejas foi recebido com sucesso e já está sendo preparado!");
+      Alert.alert("Pedido confirmado", "Seu pedido foi registrado com sucesso e está em processamento.");
     } catch (err) {
       console.error("Erro ao finalizar pedido:", err);
-      Alert.alert("Erro", "Não foi possível finalizar o pedido.");
+      Alert.alert("Erro", "Não foi possível processar o pedido. Tente novamente.");
     } finally {
       setFinalizando(false);
     }

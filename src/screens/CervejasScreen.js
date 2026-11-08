@@ -107,11 +107,11 @@ export function CervejasScreen() {
 
   const salvar = async () => {
     if (!nome.trim()) {
-      Alert.alert("Atenção", "O nome da cerveja é obrigatório.");
+      Alert.alert("Aviso", "O nome do produto é obrigatório.");
       return;
     }
     if (!preco || isNaN(Number(preco.replace(",", ".")))) {
-      Alert.alert("Atenção", "Informe um preço válido.");
+      Alert.alert("Aviso", "Informe um valor numérico válido para o preço.");
       return;
     }
 
@@ -154,20 +154,20 @@ export function CervejasScreen() {
       await carregarDados();
 
       if (isOnline) {
-        Alert.alert("Sucesso", "Cerveja salva e sincronizada na nuvem!");
+        Alert.alert("Sucesso", "Produto salvo com sucesso.");
       } else {
-        Alert.alert("Salvo Localmente", "Você está offline. A cerveja foi salva no SQLite e será sincronizada quando houver internet.");
+        Alert.alert("Salvo offline", "Registro salvo localmente. A sincronização será realizada automaticamente assim que a conexão for restabelecida.");
       }
     } catch (error) {
       console.error("Erro ao salvar cerveja:", error);
-      Alert.alert("Erro", "Falha ao salvar a cerveja.");
+      Alert.alert("Erro", "Não foi possível salvar o produto. Tente novamente.");
     }
   };
 
   const confirmarExcluir = (item) => {
     Alert.alert(
-      "Excluir Cerveja",
-      `Deseja realmente excluir "${item.nome}"?`,
+      "Confirmar exclusão",
+      `Tem certeza de que deseja excluir "${item.nome}"? Esta ação não pode ser desfeita.`,
       [
         { text: "Cancelar", style: "cancel" },
         { 
@@ -191,10 +191,10 @@ export function CervejasScreen() {
       }
 
       await carregarDados();
-      Alert.alert("Excluído", isOnline ? "Cerveja removida da nuvem e do aparelho." : "Removido localmente. A exclusão será sincronizada com a nuvem ao reconectar.");
+      Alert.alert("Sucesso", isOnline ? "Produto excluído com sucesso." : "Registro marcado para exclusão. A atualização será concluída ao restabelecer a conexão.");
     } catch (error) {
       console.error("Erro ao excluir cerveja:", error);
-      Alert.alert("Erro", "Falha ao excluir cerveja.");
+      Alert.alert("Erro", "Não foi possível excluir o produto. Tente novamente.");
     }
   };
 
