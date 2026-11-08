@@ -10,12 +10,12 @@ import { Platform } from "react-native";
 
 // Configuração do Firebase do projeto Cervejaria
 const firebaseConfig = {
-  apiKey: "AIzaSyCoKsv78Lqrfwknq_Ii0NRruqFuwIX0fmI",
-  authDomain: "cervejariadb-72a98.firebaseapp.com",
-  projectId: "cervejariadb-72a98",
-  storageBucket: "cervejariadb-72a98.firebasestorage.app",
-  messagingSenderId: "283073314822",
-  appId: "1:283073314822:web:24d73eac3552adbae34387"
+  apiKey: "AIzaSyBjFjdOD7_HS4YWAREd-Nl7A_gCoGGrZl8",
+  authDomain: "cervejaria-d3215.firebaseapp.com",
+  projectId: "cervejaria-d3215",
+  storageBucket: "cervejaria-d3215.firebasestorage.app",
+  messagingSenderId: "720329099824",
+  appId: "1:720329099824:web:415b4ef132e3155634fbf5"
 };
 
 // Evita inicialização duplicada

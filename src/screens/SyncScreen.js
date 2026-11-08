@@ -61,7 +61,7 @@ export function SyncScreen() {
     }
 
     try {
-      await syncService.syncAll();
+      await syncService.syncAll(true);
       await carregarResumo();
       Alert.alert("Sucesso", "Sincronização entre SQLite e Firestore concluída!");
     } catch (e) {

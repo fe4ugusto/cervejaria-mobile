@@ -56,7 +56,7 @@ export function Header({ title }) {
         {networkStatus.isOnline && (
           <TouchableOpacity 
             style={styles.syncBtn} 
-            onPress={() => syncService.syncAll()}
+            onPress={() => syncService.syncAll(true)}
             disabled={networkStatus.isSyncing}
           >
             {networkStatus.isSyncing ? (

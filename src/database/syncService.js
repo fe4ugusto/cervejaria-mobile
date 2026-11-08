@@ -11,6 +11,9 @@ import {
 import { db } from "../config/firebase";
 import {
   getPendingSyncData,
+  getLocalEstilos,
+  getLocalFornecedores,
+  getLocalCervejas,
   upsertLocalEstilo,
   upsertLocalFornecedor,
   upsertLocalCerveja,
@@ -86,8 +89,9 @@ class SyncService {
 
   /**
    * Sincronização bidirecional entre SQLite e Firestore
+   * @param {boolean} forceUploadAll Se true, envia todos os registros locais para a nuvem
    */
-  async syncAll() {
+  async syncAll(forceUploadAll = false) {
     if (this.isSyncing) return;
     if (!this.isOnline) return;
 
@@ -95,8 +99,24 @@ class SyncService {
     this.notify();
 
     try {
-      // 1. Enviar pendências locais para o Firestore
-      const { estilos, fornecedores, cervejas } = await getPendingSyncData();
+      // 1. Enviar registros locais para o Firestore
+      let estilos, fornecedores, cervejas;
+
+      if (forceUploadAll) {
+        const [allE, allF, allC] = await Promise.all([
+          getLocalEstilos(),
+          getLocalFornecedores(),
+          getLocalCervejas(),
+        ]);
+        estilos = allE;
+        fornecedores = allF;
+        cervejas = allC;
+      } else {
+        const pendentes = await getPendingSyncData();
+        estilos = pendentes.estilos;
+        fornecedores = pendentes.fornecedores;
+        cervejas = pendentes.cervejas;
+      }
 
       // Sincronizar Estilos pendentes
       for (const e of estilos) {
