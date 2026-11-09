@@ -40,14 +40,23 @@ export function AuthProvider({ children }) {
     try {
       const cleanEmail = email.trim().toLowerCase();
 
-      // Credenciais padrão do sistema
+      // Credenciais padrão do sistema: Administrador Geral
       if (cleanEmail === "admin@cervejaria.com" && password === "1234") {
-        const u = { email: cleanEmail, role: "admin", name: "Administrador" };
+        const u = { email: cleanEmail, role: "admin", name: "Administrador Geral" };
         await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(u));
         setUser(u);
         return { success: true };
       }
 
+      // Credenciais padrão do sistema: Administrador Felipe
+      if ((cleanEmail === "felipe@gmail.com" || cleanEmail === "felipe@cervejaria.com") && (password === "1234" || password === "123456")) {
+        const u = { email: cleanEmail, role: "admin", name: "Felipe Administrador" };
+        await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(u));
+        setUser(u);
+        return { success: true };
+      }
+
+      // Credenciais padrão do sistema: Cliente Cervejeiro
       if (cleanEmail === "cliente@cervejaria.com" && password === "1234") {
         const u = { email: cleanEmail, role: "cliente", name: "Cliente Cervejeiro" };
         await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(u));
@@ -55,22 +64,18 @@ export function AuthProvider({ children }) {
         return { success: true };
       }
 
-      if (cleanEmail === "julio@gmail.com" && password === "123456") {
-        const u = { email: cleanEmail, role: "admin", name: "Julio" };
-        await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(u));
-        setUser(u);
-        return { success: true };
-      }
-
       // Autenticação via Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
-      const userEmail = userCredential.user.email;
-      const isAdmin = userEmail === "julio@gmail.com" || userEmail === "admin@cervejaria.com";
+      const userEmail = (userCredential.user.email || "").toLowerCase();
+      const isAdmin = 
+        userEmail === "admin@cervejaria.com" || 
+        userEmail === "felipe@gmail.com" || 
+        userEmail === "felipe@cervejaria.com";
 
       const u = {
         uid: userCredential.user.uid,
         email: userEmail,
-        name: userCredential.user.displayName || userEmail.split("@")[0],
+        name: userCredential.user.displayName || (isAdmin ? "Felipe Administrador" : userEmail.split("@")[0]),
         role: isAdmin ? "admin" : "cliente",
       };
 
@@ -118,35 +123,38 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Autenticação com Google
+  // Autenticação com Google (SEMPRE entra como Cliente)
   const loginWithGoogle = async () => {
     try {
       if (Platform.OS === "web") {
         const result = await signInWithPopup(auth, googleProvider);
-        const userEmail = result.user.email;
-        const isAdmin = userEmail === "julio@gmail.com" || userEmail === "admin@cervejaria.com";
+        const userEmail = (result.user.email || "").toLowerCase();
 
         const u = {
           uid: result.user.uid,
           email: userEmail,
           name: result.user.displayName || userEmail.split("@")[0],
-          role: isAdmin ? "admin" : "cliente",
+          role: "cliente",
+          photoURL: result.user.photoURL || "https://lh3.googleusercontent.com/a/default-user",
+          provider: "google.com",
         };
 
         await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(u));
         setUser(u);
-        return { success: true };
+        return { success: true, user: u };
       } else {
-        // Fallback para mobile
+        // Fallback mobile: entra como Cliente
         const demoGoogleUser = {
+          uid: "google_cliente",
           email: "usuario.google@cervejaria.com",
           name: "Usuário Google",
           role: "cliente",
-          photoURL: "https://lh3.googleusercontent.com/a/default-user"
+          photoURL: "https://lh3.googleusercontent.com/a/default-user",
+          provider: "google.com"
         };
         await AsyncStorage.setItem(STORAGE_USER_KEY, JSON.stringify(demoGoogleUser));
         setUser(demoGoogleUser);
-        return { success: true };
+        return { success: true, user: demoGoogleUser };
       }
     } catch (error) {
       console.error("Erro no login com Google:", error);

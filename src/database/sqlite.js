@@ -143,3 +143,12 @@ export async function getPendingSyncData() {
     cervejas: c.filter(item => item.sync_status && item.sync_status.startsWith("pending_"))
   };
 }
+
+export const sqliteService = {
+  getCervejas: getLocalCervejas,
+  getEstilos: getLocalEstilos,
+  getFornecedores: getLocalFornecedores,
+  upsertCerveja: upsertLocalCerveja,
+  upsertEstilo: upsertLocalEstilo,
+  upsertFornecedor: upsertLocalFornecedor,
+};

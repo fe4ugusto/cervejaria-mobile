@@ -4,14 +4,16 @@ import {
   Text, 
   TouchableOpacity, 
   StyleSheet, 
-  ActivityIndicator 
+  ActivityIndicator,
+  Platform,
+  StatusBar
 } from "react-native";
 import { colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
 import { syncService } from "../database/syncService";
 
 export function Header({ title }) {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [networkStatus, setNetworkStatus] = useState({ isOnline: true, isSyncing: false });
 
   useEffect(() => {
@@ -33,7 +35,13 @@ export function Header({ title }) {
         </View>
 
         <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-          <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+          <View style={styles.userBadge}>
+            <Text style={styles.userBadgeText} numberOfLines={1}>
+              {user?.role === "admin" ? "🛡️ Admin" : "👤 " + (user?.name || "Cliente")}
+            </Text>
+          </View>
+
+          <TouchableOpacity style={styles.logoutBtn} onPress={logout} activeOpacity={0.7}>
             <Text style={styles.logoutText}>Sair</Text>
           </TouchableOpacity>
         </View>
@@ -56,7 +64,7 @@ export function Header({ title }) {
         {networkStatus.isOnline && (
           <TouchableOpacity 
             style={styles.syncBtn} 
-            onPress={() => syncService.syncAll(true)}
+            onPress={() => syncService.syncAll()}
             disabled={networkStatus.isSyncing}
           >
             {networkStatus.isSyncing ? (
@@ -73,12 +81,12 @@ export function Header({ title }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#11141c",
-    paddingTop: 10,
+    backgroundColor: "#0d1017",
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 12) + 8 : 14,
     paddingBottom: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.cardBorder,
+    borderBottomColor: "rgba(245, 200, 66, 0.12)",
   },
   topRow: {
     flexDirection: "row",
@@ -91,30 +99,50 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   logoIcon: {
-    fontSize: 28,
+    fontSize: 26,
+    backgroundColor: "rgba(245, 200, 66, 0.1)",
+    padding: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(245, 200, 66, 0.25)",
   },
   brandTitle: {
     color: colors.primary,
-    fontSize: 18,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+    fontSize: 17,
+    fontWeight: "800",
+    letterSpacing: 0.4,
   },
   screenSubtitle: {
     color: colors.textMuted,
     fontSize: 12,
+    marginTop: 1,
+    fontWeight: "500",
+  },
+  userBadge: {
+    backgroundColor: "rgba(245, 200, 66, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(245, 200, 66, 0.3)",
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  userBadgeText: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: "700",
   },
   logoutBtn: {
-    paddingVertical: 5,
+    paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: "#202534",
+    backgroundColor: "rgba(239, 68, 68, 0.08)",
     borderWidth: 1,
-    borderColor: "#2d354a",
+    borderColor: "rgba(239, 68, 68, 0.3)",
   },
   logoutText: {
-    color: colors.danger,
+    color: "#f87171",
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   statusBar: {
     flexDirection: "row",
@@ -123,7 +151,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.05)",
+    borderTopColor: "rgba(255,255,255,0.04)",
   },
   statusIndicator: {
     flexDirection: "row",
@@ -141,17 +169,17 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   syncBtn: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    backgroundColor: "rgba(245, 200, 66, 0.1)",
-    borderRadius: 6,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: "rgba(245, 200, 66, 0.12)",
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "rgba(245, 200, 66, 0.3)",
+    borderColor: "rgba(245, 200, 66, 0.35)",
   },
   syncBtnText: {
     color: colors.primary,
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 });
 

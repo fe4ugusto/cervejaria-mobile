@@ -9,7 +9,9 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
-  ScrollView
+  ScrollView,
+  Platform,
+  StatusBar
 } from "react-native";
 import { colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
@@ -256,10 +258,16 @@ export function ClientCatalogScreen() {
 
       {/* Banner */}
       <View style={styles.heroBanner}>
-        <Text style={styles.heroTitle}>Catálogo & Delivery</Text>
-        <Text style={styles.heroText}>
-          Cervejas artesanais selecionadas. Peça pelo app e receba no seu endereço.
-        </Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.heroBadge}>🔥 PRODUÇÃO ARTESANAL</Text>
+          <Text style={styles.heroTitle}>Catálogo & Delivery</Text>
+          <Text style={styles.heroText}>
+            Rótulos frescos direto para o seu endereço com entrega calculada por CEP.
+          </Text>
+        </View>
+        <View style={styles.heroDecoBox}>
+          <Text style={{ fontSize: 32 }}>🍺</Text>
+        </View>
       </View>
 
       {/* Filtros e busca */}
@@ -320,11 +328,17 @@ export function ClientCatalogScreen() {
             return (
               <View style={styles.card}>
                 <View style={styles.cardHeader}>
-                  <View style={{ flex: 1 }}>
+                  <View style={styles.beerIconBox}>
+                    <Text style={{ fontSize: 22 }}>🍺</Text>
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 12 }}>
                     <Text style={styles.beerName}>{item.nome}</Text>
                     <Text style={styles.beerStyle}>🌾 {getNomeEstilo(item.estiloId)}</Text>
                   </View>
-                  <Text style={styles.beerPrice}>R$ {Number(item.preco || 0).toFixed(2)}</Text>
+                  <View style={styles.priceContainer}>
+                    <Text style={styles.currencyTag}>R$</Text>
+                    <Text style={styles.beerPrice}>{Number(item.preco || 0).toFixed(2)}</Text>
+                  </View>
                 </View>
 
                 <View style={styles.badgesRow}>
@@ -534,7 +548,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 12) + 8 : 14,
+    paddingBottom: 12,
     backgroundColor: "#11141c",
     borderBottomWidth: 1,
     borderBottomColor: colors.cardBorder,
@@ -589,17 +604,39 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#131722",
     borderBottomWidth: 1,
-    borderBottomColor: colors.cardBorder,
+    borderBottomColor: "rgba(245, 200, 66, 0.15)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  heroBadge: {
+    color: colors.primary,
+    fontSize: 10,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+    marginBottom: 4,
   },
   heroTitle: {
-    color: colors.primary,
+    color: colors.text,
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "800",
     marginBottom: 4,
   },
   heroText: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: 12,
+    lineHeight: 16,
+    maxWidth: 260,
+  },
+  heroDecoBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: "rgba(245, 200, 66, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(245, 200, 66, 0.25)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   filterSection: {
     padding: 16,
@@ -607,12 +644,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     backgroundColor: colors.inputBg,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.inputBorder,
+    borderColor: "rgba(255, 255, 255, 0.08)",
     color: colors.text,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 11,
     fontSize: 14,
   },
   chipsRow: {
@@ -620,12 +657,12 @@ const styles = StyleSheet.create({
   },
   chip: {
     backgroundColor: "#161b26",
-    paddingVertical: 6,
+    paddingVertical: 7,
     paddingHorizontal: 14,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: "#252d3d",
+    borderColor: "rgba(255, 255, 255, 0.06)",
   },
   chipActive: {
     backgroundColor: colors.primary,
@@ -671,31 +708,48 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
+    backgroundColor: "#131722",
+    borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.cardBorder,
+    borderColor: "rgba(255, 255, 255, 0.06)",
   },
   cardHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
+  },
+  beerIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "rgba(245, 200, 66, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(245, 200, 66, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   beerName: {
-    color: colors.primary,
-    fontSize: 18,
-    fontWeight: "bold",
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: "700",
   },
   beerStyle: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 2,
   },
+  priceContainer: {
+    alignItems: "flex-end",
+  },
+  currencyTag: {
+    color: colors.primary,
+    fontSize: 10,
+    fontWeight: "700",
+  },
   beerPrice: {
-    color: colors.success,
+    color: colors.primary,
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "800",
   },
   badgesRow: {
     flexDirection: "row",

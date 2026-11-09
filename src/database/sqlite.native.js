@@ -255,3 +255,12 @@ export async function getPendingSyncData() {
   return { estilos: [], fornecedores: [], cervejas: [] };
 }
 
+export const sqliteService = {
+  getCervejas: getLocalCervejas,
+  getEstilos: getLocalEstilos,
+  getFornecedores: getLocalFornecedores,
+  upsertCerveja: upsertLocalCerveja,
+  upsertEstilo: upsertLocalEstilo,
+  upsertFornecedor: upsertLocalFornecedor,
+};
+

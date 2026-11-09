@@ -61,7 +61,7 @@ export function SyncScreen() {
     }
 
     try {
-      await syncService.syncAll(true);
+      await syncService.syncAll();
       await carregarResumo();
       Alert.alert("Sucesso", "Sincronização de dados concluída com sucesso.");
     } catch (e) {
@@ -171,11 +171,11 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   card: {
-    backgroundColor: colors.card,
-    borderRadius: 14,
+    backgroundColor: "#131722",
+    borderRadius: 16,
     padding: 18,
     borderWidth: 1,
-    borderColor: colors.cardBorder,
+    borderColor: "rgba(255, 255, 255, 0.06)",
   },
   cardTitle: {
     color: colors.primary,
@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
   },
   syncButton: {
     backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingVertical: 12,
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: "center",
     marginTop: 14,
   },

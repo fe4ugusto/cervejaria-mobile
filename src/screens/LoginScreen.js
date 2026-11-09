@@ -13,9 +13,9 @@ import {
 import { colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
 
-export function LoginScreen() {
+export function LoginScreen({ route, navigation, onLoginSuccess, onBack }) {
   const { login, signup, loginWithGoogle } = useAuth();
-  const [isRegister, setIsRegister] = useState(false);
+  const [isRegister, setIsRegister] = useState(Boolean(route?.params?.initialRegister));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -49,6 +49,8 @@ export function LoginScreen() {
 
     if (!res.success) {
       setErrorMessage(res.error || "Ocorreu um erro. Tente novamente.");
+    } else if (onLoginSuccess) {
+      onLoginSuccess();
     }
   };
 
@@ -59,6 +61,8 @@ export function LoginScreen() {
     setLoadingGoogle(false);
     if (!res.success) {
       setErrorMessage(res.error || "Não foi possível entrar com o Google.");
+    } else if (onLoginSuccess) {
+      onLoginSuccess();
     }
   };
 
@@ -68,6 +72,19 @@ export function LoginScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {(onBack || (navigation && navigation.canGoBack())) && (
+          <TouchableOpacity 
+            style={styles.backBtn} 
+            onPress={() => {
+              if (onBack) onBack();
+              else if (navigation && navigation.canGoBack()) navigation.goBack();
+            }}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.backBtnText}>← Voltar para o início</Text>
+          </TouchableOpacity>
+        )}
+
         {/* Cabeçalho */}
         <View style={styles.header}>
           <Text style={styles.logo}>🍻</Text>
@@ -147,11 +164,12 @@ export function LoginScreen() {
             <View style={styles.dividerLine} />
           </View>
 
-          {/* Login com Google */}
+          {/* Login com Google (direto como estava antes) */}
           <TouchableOpacity 
             style={styles.googleBtn} 
             onPress={handleGoogleLogin}
             disabled={loadingGoogle}
+            activeOpacity={0.8}
           >
             {loadingGoogle ? (
               <ActivityIndicator color="#fff" />
@@ -191,6 +209,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: 24,
+  },
+  backBtn: {
+    alignSelf: "flex-start",
+    marginBottom: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
+  },
+  backBtnText: {
+    color: colors.textMuted,
+    fontSize: 13,
+    fontWeight: "600",
   },
   header: {
     alignItems: "center",

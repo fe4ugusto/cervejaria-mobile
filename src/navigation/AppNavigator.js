@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -7,28 +7,31 @@ import { useAuth } from "../context/AuthContext";
 import { colors } from "../theme/colors";
 
 // Telas
+import { WelcomeScreen } from "../screens/WelcomeScreen";
 import { LoginScreen } from "../screens/LoginScreen";
 import { CervejasScreen } from "../screens/CervejasScreen";
 import { EstilosScreen } from "../screens/EstilosScreen";
 import { FornecedoresScreen } from "../screens/FornecedoresScreen";
+import { RelatorioScreen } from "../screens/RelatorioScreen";
 import { SyncScreen } from "../screens/SyncScreen";
 import { ClientCatalogScreen } from "../screens/ClientCatalogScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Navegação de abas do Administrador
+// Navegação de abas do Administrador (sem catálogo de compras)
 function AdminTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#11141c",
-          borderTopColor: colors.cardBorder,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 6,
+          backgroundColor: "#0d1017",
+          borderTopColor: "rgba(245, 200, 66, 0.15)",
+          borderTopWidth: 1,
+          height: 64,
+          paddingBottom: 10,
+          paddingTop: 8,
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
@@ -72,12 +75,12 @@ function AdminTabs() {
       />
 
       <Tab.Screen
-        name="CatalogoCliente"
-        component={ClientCatalogScreen}
+        name="Relatorios"
+        component={RelatorioScreen}
         options={{
-          tabBarLabel: "Catálogo",
+          tabBarLabel: "Relatórios",
           tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: focused ? 22 : 18 }}>🛒</Text>
+            <Text style={{ fontSize: focused ? 22 : 18 }}>📊</Text>
           ),
         }}
       />
@@ -98,6 +101,8 @@ function AdminTabs() {
 
 export function AppNavigator() {
   const { user, loading } = useAuth();
+  // Começa sempre na tela inicial (WelcomeScreen) ao abrir o app
+  const [hasEntered, setHasEntered] = useState(false);
 
   if (loading) {
     return (
@@ -108,12 +113,39 @@ export function AppNavigator() {
     );
   }
 
+  // Enquanto o usuário estiver na tela de boas-vindas inicial ou fazendo login
+  if (!hasEntered || !user) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+          <Stack.Screen name="Welcome">
+            {(props) => (
+              <WelcomeScreen
+                {...props}
+                onEnter={() => setHasEntered(true)}
+              />
+            )}
+          </Stack.Screen>
+
+          <Stack.Screen name="Login">
+            {(props) => (
+              <LoginScreen
+                {...props}
+                onLoginSuccess={() => setHasEntered(true)}
+                onBack={() => setHasEntered(false)}
+              />
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  // Usuário autenticado que já clicou para acessar a plataforma
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
-        {!user ? (
-          <Stack.Screen name="Login" component={LoginScreen} />
-        ) : user.role === "admin" ? (
+        {user.role === "admin" ? (
           <Stack.Screen name="AdminDashboard" component={AdminTabs} />
         ) : (
           <Stack.Screen name="ClientHome" component={ClientCatalogScreen} />
